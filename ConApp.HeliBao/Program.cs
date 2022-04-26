@@ -17,7 +17,7 @@ namespace ConApp.HeliBao
             {
                 ProductCode = "WXPAYSCAN",
                 OrderNo = "p_20170302185347",
-                MerchantNo = "Me10000002",
+                MerchantNo = "Me10047006",
                 OrderAmout = 0.01F,
                 MemberName = "张三",
                 MemberID = "110101200001012999",
@@ -27,11 +27,11 @@ namespace ConApp.HeliBao
                 Period = "1",
                 PeriodUnit = "Hour",
                 ServerCallbackUrl = "https://www.badiu.com",
-                PlatMerchantNo = "如下说明",
+                PlatMerchantNo = "pNo1",
                 ReportId = "123123",
                 ShareList = new List<WXScanRequest.WXScanShare> {
-                new WXScanRequest.WXScanShare{ Index =1,ShareAmout = 5.33F, ShareMerchantNo="Me10000001"},
-                new WXScanRequest.WXScanShare{ Index =2,ShareAmout = 5.33F, ShareMerchantNo="Me10000002"},
+                new WXScanRequest.WXScanShare{ index =1,ShareAmout = 5.33F, ShareMerchantNo="Me10000001"},
+                new WXScanRequest.WXScanShare{ index =2,ShareAmout = 5.33F, ShareMerchantNo="Me10000002"},
                 }
             };
             var context = new ValidationContext(wx, null, null);
@@ -45,22 +45,19 @@ namespace ConApp.HeliBao
                 results.Select(x => x.ErrorMessage).ToList().ForEach(Console.WriteLine);
             }
 
-            var key = "thisiskey";
-            var url = "http://www.baidu.com";
+            var key = "ldGY8VRomQRmldBbVEMHrw==";
+            var secret = "A4T7J8oFpyQDBhxi";
+            var url = "	https://cbtrxtest.helipay.com/cbtrx/rest/pay/appScan";
 
             var j = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
             var input = JsonConvert.SerializeObject(wx, j);
-            var aeskey = HLBPluginUtils.EncryptByAES(input, key);
+            var dto = HLBPluginUtils.ProcessRequestDto(wx.MerchantNo, key, secret, wx); // 包装传输对象
+            
+            var reqStr = JsonConvert.SerializeObject(dto);
+            var result = HLBPluginUtils.DoPost(url, reqStr);
 
-            var signkey = HLBPluginUtils.CreateSign(FormatExtension.ToDictionary(wx), key);
-
-            var dto = HLBPluginUtils.ProcessRequestDto(wx.MerchantNo, aeskey, signkey, wx);
-
-            var result = HLBPluginUtils.DoPost(url, input);
-
-            var response = JsonConvert.DeserializeObject<HLBDto>(result);
-
-            var resultData = response.ProcessResponse<WXScanResponse>(aeskey, signkey);
+            var response = JsonConvert.DeserializeObject<HLBDto>(result); // 返回
+            var resultData = response.ProcessResponse<WXScanResponse>(key, secret);
 
         }
 

@@ -75,13 +75,8 @@ namespace ConApp.HeliBao
         [MaxLength(100)]
         public IList<WXScanShare> ShareList { get; set; }
 
-        public sealed class WXScanShare
+        public sealed class WXScanShare : DetailBaseDto
         {
-            /// <summary>
-            /// 排序参数
-            /// </summary>
-            [Required]
-            public int Index { get; set; }
             /// <summary>
             /// 分账账号编号
             /// </summary>

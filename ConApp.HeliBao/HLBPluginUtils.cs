@@ -119,7 +119,7 @@ namespace Jzh.PayPlugin.HeLiBao
             byte[] keyBytes = Convert.FromBase64String(key);
             byte[] toEncryptArray = Encoding.UTF8.GetBytes(input);
 
-            RijndaelManaged rm = new RijndaelManaged
+            AesManaged rm = new AesManaged
             {
                 Key = keyBytes,
                 Mode = CipherMode.ECB,
@@ -130,25 +130,6 @@ namespace Jzh.PayPlugin.HeLiBao
             Byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
             return Convert.ToBase64String(resultArray, 0, resultArray.Length);
 
-            //using (AesCryptoServiceProvider aesAlg = new AesCryptoServiceProvider())
-            //{
-            //    aesAlg.Key = keyBytes;
-            //    //aesAlg.IV = new byte[16];
-
-            //    ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-            //    using (MemoryStream msEncrypt = new MemoryStream())
-            //    {
-            //        using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-            //        {
-            //            using (StreamWriter swEncrypt = new StreamWriter(csEncrypt, Encoding.UTF8))
-            //            {
-            //                swEncrypt.Write(input);
-            //            }
-            //            byte[] bytes = msEncrypt.ToArray();
-            //            return Convert.ToBase64String(bytes);
-            //        }
-            //    }
-            //}
         }
 
         /// <summary>  
@@ -159,37 +140,27 @@ namespace Jzh.PayPlugin.HeLiBao
         /// <returns>返回解密后的字符串</returns>  
         public static string DecryptByAES(string input, string key)
         {
-            byte[] inputBytes = Convert.FromBase64String(input);
-            byte[] keyBytes = Convert.FromBase64String(key);
-
-            RijndaelManaged rm = new RijndaelManaged
+            try
             {
-                Key = keyBytes,
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
+                byte[] inputBytes = Convert.FromBase64String(input);
+                byte[] keyBytes = Convert.FromBase64String(key);
 
-            ICryptoTransform cTransform = rm.CreateDecryptor();
-            Byte[] resultArray = cTransform.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
-            return Encoding.UTF8.GetString(resultArray);
+                AesManaged rm = new AesManaged
+                {
+                    Key = keyBytes,
+                    Mode = CipherMode.ECB,
+                    Padding = PaddingMode.PKCS7
+                };
 
-            //using (AesCryptoServiceProvider aesAlg = new AesCryptoServiceProvider())
-            //{
-            //    aesAlg.Key = keyBytes;
-            //    //aesAlg.IV = new byte[16];
+                ICryptoTransform cTransform = rm.CreateDecryptor();
+                Byte[] resultArray = cTransform.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
+                return Encoding.UTF8.GetString(resultArray);
+            }
+            catch (Exception e)
+            {
+                return input;
+            }
 
-            //    ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-            //    using (MemoryStream msEncrypt = new MemoryStream(inputBytes))
-            //    {
-            //        using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, decryptor, CryptoStreamMode.Read))
-            //        {
-            //            using (StreamReader srEncrypt = new StreamReader(csEncrypt, Encoding.UTF8))
-            //            {
-            //                return srEncrypt.ReadToEnd();
-            //            }
-            //        }
-            //    }
-            //}
         }
 
 
