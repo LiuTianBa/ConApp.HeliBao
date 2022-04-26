@@ -46,9 +46,16 @@ namespace ConApp.HeliBao
                 results.Select(x => x.ErrorMessage).ToList().ForEach(Console.WriteLine);
             }
 
-            var aeskey = "EMGVuR9HAZGSdeaxIfPCWw==";
-            var signsecret = "Xj1pd4Lh73DccrUM";
-            var url = "https://cbtrxtest.helipay.com/cbtrx/rest/pay/appScan";
+            getPayUrl(wx, "EMGVuR9HAZGSdeaxIfPCWw==", "Xj1pd4Lh73DccrUM", "https://cbtrxtest.helipay.com/cbtrx/rest/pay/appScan");
+
+            wx.productCode = "ALIPAYSCAN";
+            getPayUrl(wx, "FhisfVv9AR4zuA6Z26fmVw==", "ZxPZyYjPVUINmk8F", "https://cbtrxtest.helipay.com/cbtrx/rest/pay/appScan");
+
+
+        }
+
+        private static WXScanResponse getPayUrl(WXScanRequest wx,string aeskey,string signsecret,string url)
+        {
 
             var dto = HLBPluginUtils.ProcessRequestDto(wx.merchantNo, aeskey, signsecret, wx);
 
@@ -57,9 +64,7 @@ namespace ConApp.HeliBao
 
             var response = JsonConvert.DeserializeObject<HLBDto>(result);
             var resultData = response.ProcessResponse<WXScanResponse>(aeskey, signsecret);
-
+            return resultData;
         }
-
-
     }
 }
