@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace ConApp.HeliBao
 {
@@ -12,49 +14,48 @@ namespace ConApp.HeliBao
     {
         static void Main(string[] args)
         {
-
             var wx = new WXScanRequest
             {
-                ProductCode = "WXPAYSCAN",
-                OrderNo = "p_20170302185347",
-                MerchantNo = "Me10047006",
-                OrderAmout = 0.01F,
-                MemberName = "张三",
-                MemberID = "110101200001012999",
-                MemberMobile = "13701234567",
-                GoodsName = "Iphone7",
-                OrderIp = "1.1.1.1",
-                Period = "1",
-                PeriodUnit = "Hour",
-                ServerCallbackUrl = "https://www.badiu.com",
-                PlatMerchantNo = "pNo1",
-                ReportId = "123123",
-                ShareList = new List<WXScanRequest.WXScanShare> {
-                new WXScanRequest.WXScanShare{ index =1,ShareAmout = 5.33F, ShareMerchantNo="Me10000001"},
-                new WXScanRequest.WXScanShare{ index =2,ShareAmout = 5.33F, ShareMerchantNo="Me10000002"},
-                }
+                productCode = "WXPAYSCAN",
+                orderNo = "p_20170302185348",
+                merchantNo = "Me10047006",
+                orderAmount = 0.02F,
+                memberName = "张三",
+                memberID = "110101200001012999",
+                memberMobile = "13701234567",
+                goodsName = "Iphone7",
+                orderIp = "1.1.1.1",
+                period = "1",
+                periodUnit = "Hour",
+                serverCallbackUrl = "https://www.badiu.com",
+                platMerchantNo = "pNo1",
+                reportId = "",
+                //shareList = new List<WXScanRequest.WXScanShare> {
+                //new WXScanRequest.WXScanShare{ index =1,shareAmount = 0.01F, shareMerchantNo="Me10047006"},
+                //new WXScanRequest.WXScanShare{ index =2,shareAmount = 0.01F, shareMerchantNo="Me10047006"},
+                //}
             };
             var context = new ValidationContext(wx, null, null);
             var results = new List<ValidationResult>();
             if (Validator.TryValidateObject(wx, context, results, true))
             {
-                Console.WriteLine("验证成功");
+
             }
             else
             {
                 results.Select(x => x.ErrorMessage).ToList().ForEach(Console.WriteLine);
             }
 
-            var aeskey = "ldGY8VRomQRmldBbVEMHrw==";
-            var signsecret = "A4T7J8oFpyQDBhxi";
+            var aeskey = "EMGVuR9HAZGSdeaxIfPCWw==";
+            var signsecret = "Xj1pd4Lh73DccrUM";
             var url = "https://cbtrxtest.helipay.com/cbtrx/rest/pay/appScan";
 
-            var dto = HLBPluginUtils.ProcessRequestDto(wx.MerchantNo, aeskey, signsecret, wx); // 包装传输对象
-            
+            var dto = HLBPluginUtils.ProcessRequestDto(wx.merchantNo, aeskey, signsecret, wx);
+
             var reqStr = JsonConvert.SerializeObject(dto);
             var result = HLBPluginUtils.DoPost(url, reqStr);
 
-            var response = JsonConvert.DeserializeObject<HLBDto>(result); // 返回
+            var response = JsonConvert.DeserializeObject<HLBDto>(result);
             var resultData = response.ProcessResponse<WXScanResponse>(aeskey, signsecret);
 
         }

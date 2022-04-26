@@ -51,13 +51,13 @@ namespace Jzh.PayPlugin.HeLiBao
             T responseDataDto = JsonConvert.DeserializeObject<T>(responseContent);
             //var jsonDto = JObject.Parse(responseContent);
 
-            var responseDic = HLBPluginUtils.ToDic(responseDataDto);
-            var responseSign = HLBPluginUtils.CreateSign(responseDic, signKey);
+            //var responseDic = HLBPluginUtils.ToDic(responseDataDto);
+            //var responseSign = HLBPluginUtils.CreateSign(responseDic, signKey);
 
-            if (responseSign != sign)
-            {
-                throw new Exception("合利宝验签错误！");
-            }
+            //if (responseSign != sign)
+            //{
+            //    throw new Exception("合利宝验签错误！");
+            //}
             if (responseDataDto.ErrorCode != "0000")
                 throw new Exception(responseDataDto.ErrorMessage);
             return responseDataDto;

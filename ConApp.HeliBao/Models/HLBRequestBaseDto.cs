@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,22 +11,27 @@ namespace Jzh.PayPlugin.HeLiBao.Models
     public class HLBRequestBaseDto
     {
         /// <summary>
-        /// 产品编码
+        /// 商户编号
         /// </summary>
         [Required]
-        [MaxLength(20)]
-        public string ProductCode { get; set; }
+        [MaxLength(10)]
+        [JsonProperty(Order = 5)]
+        public string merchantNo { get; set; }
+
         /// <summary>
         /// 商户订单号
         /// </summary>
         [Required]
         [MaxLength(64)]
-        public string OrderNo { get; set; }
+        [JsonProperty(Order = 8)]
+        public string orderNo { get; set; }
+
         /// <summary>
-        /// 商户编号
+        /// 产品编码
         /// </summary>
         [Required]
-        [MaxLength(10)]
-        public string MerchantNo { get; set; }
+        [MaxLength(20)]
+        [JsonProperty(Order = 12)]
+        public string productCode { get; set; }
     }
 }

@@ -40,7 +40,11 @@ namespace Jzh.PayPlugin.HeLiBao
         /// <returns></returns>
         public static HLBDto ProcessRequestDto<T>(string merchantNo, string aesKey, string signKey, T model) where T : HLBRequestBaseDto
         {
-            var contentStr = JsonConvert.SerializeObject(model, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            var setting = new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+            var contentStr = JsonConvert.SerializeObject(model, setting);
             var content = EncryptByAES(contentStr, aesKey);
 
             var requestDic = ToDic(model);
@@ -51,8 +55,8 @@ namespace Jzh.PayPlugin.HeLiBao
                 content = content,
                 sign = sign,
                 merchantNo = merchantNo,
-                orderNo = model.OrderNo,
-                productCode = model.ProductCode
+                orderNo = model.orderNo,
+                productCode = model.productCode
             };
             return requestDto;
         }
@@ -74,6 +78,23 @@ namespace Jzh.PayPlugin.HeLiBao
 
             return ByteArrayToHexString(Result);
         }
+
+        /// <summary>
+        /// 创建签名
+        /// </summary>
+        /// <param name="dictionary">需要签名的字典数据集</param>
+        /// <param name="key">私钥</param>
+        /// <returns></returns>
+        public static string CreateSign(string source, string key)
+        {
+            var signstr = string.Concat(key, ',', source, ',', key);
+            //sha256加密
+            byte[] SHA256Data = Encoding.UTF8.GetBytes(signstr);
+            SHA256Managed Sha256 = new SHA256Managed();
+            byte[] Result = Sha256.ComputeHash(SHA256Data);
+            return ByteArrayToHexString(Result);
+        }
+
         /// <summary>
         /// 将一个byte数组转换成一个格式化的16进制字符串
         /// </summary>
@@ -120,7 +141,7 @@ namespace Jzh.PayPlugin.HeLiBao
             byte[] keyBytes = Convert.FromBase64String(key);
             byte[] toEncryptArray = Encoding.UTF8.GetBytes(input);
 
-            AesManaged rm = new AesManaged
+            RijndaelManaged rm = new RijndaelManaged
             {
                 Key = keyBytes,
                 Mode = CipherMode.ECB,
@@ -146,7 +167,7 @@ namespace Jzh.PayPlugin.HeLiBao
                 byte[] inputBytes = Convert.FromBase64String(input);
                 byte[] keyBytes = Convert.FromBase64String(key);
 
-                AesManaged rm = new AesManaged
+                RijndaelManaged rm = new RijndaelManaged
                 {
                     Key = keyBytes,
                     Mode = CipherMode.ECB,
@@ -157,7 +178,7 @@ namespace Jzh.PayPlugin.HeLiBao
                 Byte[] resultArray = cTransform.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
                 return Encoding.UTF8.GetString(resultArray);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return input;
             }
