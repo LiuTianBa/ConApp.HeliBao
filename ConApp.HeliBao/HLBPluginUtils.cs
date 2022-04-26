@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,7 +40,7 @@ namespace Jzh.PayPlugin.HeLiBao
         /// <returns></returns>
         public static HLBDto ProcessRequestDto<T>(string merchantNo, string aesKey, string signKey, T model) where T : HLBRequestBaseDto
         {
-            var contentStr = JsonConvert.SerializeObject(model, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+            var contentStr = JsonConvert.SerializeObject(model, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
             var content = EncryptByAES(contentStr, aesKey);
 
             var requestDic = ToDic(model);

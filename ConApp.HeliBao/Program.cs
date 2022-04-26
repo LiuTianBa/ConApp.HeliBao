@@ -45,19 +45,17 @@ namespace ConApp.HeliBao
                 results.Select(x => x.ErrorMessage).ToList().ForEach(Console.WriteLine);
             }
 
-            var key = "ldGY8VRomQRmldBbVEMHrw==";
-            var secret = "A4T7J8oFpyQDBhxi";
-            var url = "	https://cbtrxtest.helipay.com/cbtrx/rest/pay/appScan";
+            var aeskey = "ldGY8VRomQRmldBbVEMHrw==";
+            var signsecret = "A4T7J8oFpyQDBhxi";
+            var url = "https://cbtrxtest.helipay.com/cbtrx/rest/pay/appScan";
 
-            var j = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-            var input = JsonConvert.SerializeObject(wx, j);
-            var dto = HLBPluginUtils.ProcessRequestDto(wx.MerchantNo, key, secret, wx); // 包装传输对象
+            var dto = HLBPluginUtils.ProcessRequestDto(wx.MerchantNo, aeskey, signsecret, wx); // 包装传输对象
             
             var reqStr = JsonConvert.SerializeObject(dto);
             var result = HLBPluginUtils.DoPost(url, reqStr);
 
             var response = JsonConvert.DeserializeObject<HLBDto>(result); // 返回
-            var resultData = response.ProcessResponse<WXScanResponse>(key, secret);
+            var resultData = response.ProcessResponse<WXScanResponse>(aeskey, signsecret);
 
         }
 
